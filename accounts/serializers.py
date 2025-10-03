@@ -5,6 +5,8 @@ from typing import Any
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import User
 
@@ -129,3 +131,42 @@ class ChangePasswordSerializer(serializers.Serializer):
         user.set_password(self.validated_data['new_password'])
         user.save()
         return user
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    """Custom JWT token serializer with secure claims."""
+    
+    @classmethod
+    def get_token(cls, user: User) -> RefreshToken:
+        """Create token with secure claims - NO PASSWORD INFO."""
+        token = super().get_token(user)
+        
+        # Add custom claims - only safe user info
+        token['email'] = user.email
+        token['first_name'] = user.first_name
+        token['last_name'] = user.last_name
+        token['is_active'] = user.is_active
+        token['is_staff'] = user.is_staff
+        token['is_superuser'] = user.is_superuser
+        
+        # DO NOT include password or sensitive info
+        return token
+    
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        """Validate credentials and return tokens."""
+        data = super().validate(attrs)
+        
+        # Add user info to response (without password)
+        data['user'] = {
+            'id': self.user.id,
+            'email': self.user.email,
+            'first_name': self.user.first_name,
+            'last_name': self.user.last_name,
+            'full_name': self.user.full_name,
+            'phone': self.user.phone,
+            'is_active': self.user.is_active,
+            'created_at': self.user.created_at,
+            'updated_at': self.user.updated_at,
+        }
+        
+        return data

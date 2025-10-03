@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Django Skeleton</title>
+    <title>Django Skeleton - Authentication</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,344 +13,450 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 1rem;
         }
 
         .login-container {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 3rem 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .login-header {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .login-header .logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
         }
 
         .login-header h1 {
-            color: #333;
-            font-size: 2rem;
+            color: #2d3748;
+            font-size: 1.8rem;
+            font-weight: 700;
             margin-bottom: 0.5rem;
         }
 
         .login-header p {
-            color: #666;
-            font-size: 0.9rem;
+            color: #718096;
+            font-size: 0.95rem;
+            font-weight: 400;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 0.25rem;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: #718096;
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
         }
 
         .form-group {
             margin-bottom: 1.5rem;
+            position: relative;
         }
 
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
-            color: #333;
-            font-weight: 500;
+            color: #4a5568;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #a0aec0;
+            font-size: 1rem;
         }
 
         .form-group input {
             width: 100%;
-            padding: 0.75rem;
-            border: 2px solid #e1e5e9;
-            border-radius: 5px;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
             font-size: 1rem;
-            transition: border-color 0.3s ease;
+            transition: all 0.3s ease;
+            background: #f7fafc;
         }
 
         .form-group input:focus {
             outline: none;
             border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
-        .login-btn {
+        .form-group input::placeholder {
+            color: #a0aec0;
+        }
+
+        .btn {
             width: 100%;
-            padding: 0.75rem;
+            padding: 1rem;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 12px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s ease;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
-        .login-btn:hover {
+        .btn:hover {
             transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
         }
 
-        .login-btn:disabled {
-            opacity: 0.6;
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.7;
             cursor: not-allowed;
             transform: none;
         }
 
-        .register-link {
-            text-align: center;
-            margin-top: 1.5rem;
+        .btn i {
+            margin-right: 0.5rem;
         }
 
-        .register-link a {
+        .form-footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .form-footer a {
             color: #667eea;
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 600;
+            transition: color 0.3s ease;
         }
 
-        .register-link a:hover {
+        .form-footer a:hover {
+            color: #5a67d8;
             text-decoration: underline;
         }
 
-        .error-message {
-            background: #fee;
-            color: #c33;
-            padding: 0.75rem;
-            border-radius: 5px;
-            margin-bottom: 1rem;
-            border: 1px solid #fcc;
+        .error {
+            background: linear-gradient(135deg, #fed7d7 0%, #feb2b2 100%);
+            color: #c53030;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #e53e3e;
+            font-weight: 500;
         }
 
-        .success-message {
-            background: #efe;
-            color: #3c3;
-            padding: 0.75rem;
-            border-radius: 5px;
-            margin-bottom: 1rem;
-            border: 1px solid #cfc;
+        .success {
+            background: linear-gradient(135deg, #c6f6d5 0%, #9ae6b4 100%);
+            color: #2f855a;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #38a169;
+            font-weight: 500;
         }
 
         .loading {
-            display: none;
-            text-align: center;
-            margin-top: 1rem;
+            opacity: 0.7;
+            pointer-events: none;
         }
 
-        .spinner {
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid #667eea;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
+        .loading .btn {
+            background: #a0aec0;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .register-form {
-            display: none;
-        }
-
-        .register-form.active {
-            display: block;
-        }
-
-        .login-form.active {
-            display: none;
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 2rem 1.5rem;
+                margin: 1rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="login-container">
         <div class="login-header">
+            <div class="logo">
+                <i class="fas fa-rocket"></i>
+            </div>
             <h1>Welcome Back</h1>
-            <p>Sign in to your account</p>
+            <p>Sign in to your account to continue</p>
         </div>
 
-        <div id="message"></div>
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('login')">
+                <i class="fas fa-sign-in-alt"></i> Sign In
+            </div>
+            <div class="tab" onclick="switchTab('register')">
+                <i class="fas fa-user-plus"></i> Sign Up
+            </div>
+        </div>
 
         <!-- Login Form -->
-        <form id="loginForm" class="login-form active">
-            <div class="form-group">
-                <label for="loginEmail">Email</label>
-                <input type="email" id="loginEmail" name="email" required>
-            </div>
-            <div class="form-group">
-                <label for="loginPassword">Password</label>
-                <input type="password" id="loginPassword" name="password" required>
-            </div>
-            <button type="submit" class="login-btn" id="loginBtn">Sign In</button>
-        </form>
-
-        <!-- Register Form -->
-        <form id="registerForm" class="register-form">
-            <div class="form-group">
-                <label for="registerEmail">Email</label>
-                <input type="email" id="registerEmail" name="email" required>
-            </div>
-            <div class="form-group">
-                <label for="registerFirstName">First Name</label>
-                <input type="text" id="registerFirstName" name="first_name" required>
-            </div>
-            <div class="form-group">
-                <label for="registerLastName">Last Name</label>
-                <input type="text" id="registerLastName" name="last_name" required>
-            </div>
-            <div class="form-group">
-                <label for="registerPhone">Phone (Optional)</label>
-                <input type="tel" id="registerPhone" name="phone">
-            </div>
-            <div class="form-group">
-                <label for="registerPassword">Password</label>
-                <input type="password" id="registerPassword" name="password" required>
-            </div>
-            <div class="form-group">
-                <label for="registerPasswordConfirm">Confirm Password</label>
-                <input type="password" id="registerPasswordConfirm" name="password_confirm" required>
-            </div>
-            <button type="submit" class="login-btn" id="registerBtn">Sign Up</button>
-        </form>
-
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
+        <div id="login-form" class="tab-content active">
+            <form id="loginForm">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="loginEmail">Email Address</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="loginEmail" name="email" placeholder="Enter your email" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="loginPassword" name="password" placeholder="Enter your password" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+            </form>
         </div>
 
-        <div class="register-link">
-            <a href="#" id="toggleForm">Don't have an account? Sign up</a>
+        <!-- Register Form -->
+        <div id="register-form" class="tab-content">
+            <form id="registerForm">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="regFirstName">First Name</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="regFirstName" name="first_name" placeholder="Enter your first name" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="regLastName">Last Name</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="regLastName" name="last_name" placeholder="Enter your last name" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">Email Address</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="regEmail" name="email" placeholder="Enter your email" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="regPhone">Phone Number (Optional)</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-phone"></i>
+                        <input type="tel" id="regPhone" name="phone" placeholder="Enter your phone number">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Password</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="regPassword" name="password" placeholder="Create a password" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="regPasswordConfirm">Confirm Password</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="regPasswordConfirm" name="password_confirm" placeholder="Confirm your password" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+            </form>
+        </div>
+
+        <div class="form-footer">
+            <p>Need help? <a href="mailto:support@example.com">Contact Support</a></p>
         </div>
     </div>
 
     <script>
-        const API_BASE = '/api/auth';
-        let isLoginForm = true;
-
-        // DOM elements
-        const loginForm = document.getElementById('loginForm');
-        const registerForm = document.getElementById('registerForm');
-        const toggleForm = document.getElementById('toggleForm');
-        const messageDiv = document.getElementById('message');
-        const loadingDiv = document.getElementById('loading');
-
-        // Toggle between login and register forms
-        toggleForm.addEventListener('click', (e) => {
-            e.preventDefault();
-            isLoginForm = !isLoginForm;
+        function switchTab(tab) {
+            // Remove active class from all tabs and contents
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             
-            if (isLoginForm) {
-                loginForm.classList.add('active');
-                registerForm.classList.remove('active');
-                toggleForm.textContent = "Don't have an account? Sign up";
-                document.querySelector('.login-header h1').textContent = 'Welcome Back';
-                document.querySelector('.login-header p').textContent = 'Sign in to your account';
-            } else {
-                loginForm.classList.remove('active');
-                registerForm.classList.add('active');
-                toggleForm.textContent = "Already have an account? Sign in";
-                document.querySelector('.login-header h1').textContent = 'Create Account';
-                document.querySelector('.login-header p').textContent = 'Sign up for a new account';
-            }
-            
-            clearMessage();
-        });
+            // Add active class to selected tab and content
+            event.target.classList.add('active');
+            document.getElementById(tab + '-form').classList.add('active');
+        }
 
-        // Show message
         function showMessage(message, type = 'error') {
-            messageDiv.innerHTML = `<div class="${type}-message">${message}</div>`;
+            // Remove existing messages
+            const existingMessage = document.querySelector('.error, .success');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+
+            // Create new message
+            const messageDiv = document.createElement('div');
+            messageDiv.className = type;
+            messageDiv.textContent = message;
+            
+            // Insert at the top of the form
+            const activeForm = document.querySelector('.tab-content.active form');
+            activeForm.insertBefore(messageDiv, activeForm.firstChild);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.remove();
+                }
+            }, 5000);
         }
 
-        // Clear message
-        function clearMessage() {
-            messageDiv.innerHTML = '';
+        function setLoading(form, loading = true) {
+            const btn = form.querySelector('.btn');
+            const container = document.querySelector('.login-container');
+            
+            if (loading) {
+                container.classList.add('loading');
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            } else {
+                container.classList.remove('loading');
+                btn.disabled = false;
+                if (form.id === 'loginForm') {
+                    btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+                } else {
+                    btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+                }
+            }
         }
 
-        // Show loading
-        function showLoading() {
-            loadingDiv.style.display = 'block';
-            document.getElementById('loginBtn').disabled = true;
-            document.getElementById('registerBtn').disabled = true;
-        }
-
-        // Hide loading
-        function hideLoading() {
-            loadingDiv.style.display = 'none';
-            document.getElementById('loginBtn').disabled = false;
-            document.getElementById('registerBtn').disabled = false;
-        }
-
-        // Store tokens in localStorage
-        function storeTokens(tokens) {
-            localStorage.setItem('access_token', tokens.access);
-            localStorage.setItem('refresh_token', tokens.refresh);
-        }
-
-        // Login form submission
-        loginForm.addEventListener('submit', async (e) => {
+        // Login Form Handler
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            clearMessage();
-            showLoading();
+            setLoading(this, true);
 
-            const formData = new FormData(loginForm);
-            const data = {
-                email: formData.get('email'),
-                password: formData.get('password')
-            };
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
 
             try {
-                const response = await fetch(`${API_BASE}/login/`, {
+                console.log('Attempting login with data:', data);
+                
+                const response = await fetch('/api/auth/login/', {
                     method: 'POST',
+                    credentials: 'include', // Include cookies for token storage
                     headers: {
                         'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
                     },
                     body: JSON.stringify(data)
                 });
 
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+
                 const result = await response.json();
+                console.log('Response data:', result);
 
                 if (response.ok) {
-                    storeTokens(result.tokens);
                     showMessage('Login successful! Redirecting...', 'success');
+                    console.log('Login successful, redirecting to dashboard...');
                     setTimeout(() => {
+                        console.log('Redirecting to /dashboard/');
                         window.location.href = '/dashboard/';
                     }, 1500);
                 } else {
+                    console.log('Login failed:', result);
                     showMessage(result.detail || 'Login failed. Please check your credentials.');
                 }
             } catch (error) {
+                console.error('Login error:', error);
                 showMessage('Network error. Please try again.');
             } finally {
-                hideLoading();
+                setLoading(this, false);
             }
         });
 
-        // Register form submission
-        registerForm.addEventListener('submit', async (e) => {
+        // Register Form Handler
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            clearMessage();
-            showLoading();
+            setLoading(this, true);
 
-            const formData = new FormData(registerForm);
-            const data = {
-                email: formData.get('email'),
-                first_name: formData.get('first_name'),
-                last_name: formData.get('last_name'),
-                phone: formData.get('phone'),
-                password: formData.get('password'),
-                password_confirm: formData.get('password_confirm')
-            };
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
 
             // Validate password confirmation
             if (data.password !== data.password_confirm) {
                 showMessage('Passwords do not match.');
-                hideLoading();
+                setLoading(this, false);
                 return;
             }
 
             try {
-                const response = await fetch(`${API_BASE}/register/`, {
+                const response = await fetch('/api/auth/register/', {
                     method: 'POST',
+                    credentials: 'include', // Include cookies for token storage
                     headers: {
                         'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
                     },
                     body: JSON.stringify(data)
                 });
@@ -357,33 +464,132 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    storeTokens(result.tokens);
-                    showMessage('Registration successful! Redirecting...', 'success');
+                    showMessage('Account created successfully! Redirecting...', 'success');
                     setTimeout(() => {
                         window.location.href = '/dashboard/';
                     }, 1500);
                 } else {
                     if (result.email) {
-                        showMessage(`Email: ${result.email[0]}`);
-                    } else if (result.password) {
-                        showMessage(`Password: ${result.password[0]}`);
-                    } else if (result.password_confirm) {
-                        showMessage(`Password confirmation: ${result.password_confirm[0]}`);
+                        showMessage('Email already exists. Please use a different email.');
                     } else {
-                        showMessage('Registration failed. Please check your information.');
+                        showMessage(result.detail || 'Registration failed. Please try again.');
                     }
                 }
             } catch (error) {
                 showMessage('Network error. Please try again.');
             } finally {
-                hideLoading();
+                setLoading(this, false);
             }
         });
 
-        // Check if user is already logged in
-        if (localStorage.getItem('access_token')) {
-            window.location.href = '/dashboard/';
+        // Utility function to get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
         }
+
+        // Check if user is already logged in
+        window.addEventListener('load', function() {
+            console.log('Page loaded, checking if user is already logged in...');
+            
+            // Check if user has session (cookies)
+            fetch('/api/auth/check/', {
+                credentials: 'include'
+            })
+            .then(response => {
+                console.log('Check login status response:', response.status);
+                if (response.ok) {
+                    console.log('User is already logged in, redirecting to dashboard...');
+                    window.location.href = '/dashboard/';
+                } else {
+                    console.log('User not logged in, staying on login page');
+                }
+            })
+            .catch(error => {
+                console.log('Error checking login status:', error);
+            });
+        });
+
+        // Token management utilities
+        class TokenManager {
+            static async refreshToken() {
+                try {
+                    const response = await originalFetch('/api/auth/refresh/', {
+                        method: 'POST',
+                        credentials: 'include', // Include cookies
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        return true; // Tokens refreshed in cookies
+                    } else {
+                        // Refresh failed, redirect to login
+                        this.clearTokens();
+                        window.location.href = '/login/';
+                        return false;
+                    }
+                } catch (error) {
+                    this.clearTokens();
+                    window.location.href = '/login/';
+                    return false;
+                }
+            }
+            
+            static clearTokens() {
+                // Clear any localStorage tokens (fallback)
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('refresh_token');
+            }
+            
+            static async makeAuthenticatedRequest(url, options = {}) {
+                // Make request with credentials (cookies)
+                const defaultOptions = {
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        ...options.headers
+                    }
+                };
+                
+                let response = await originalFetch(url, { ...defaultOptions, ...options });
+                
+                // If 401, try to refresh token
+                if (response.status === 401) {
+                    const refreshed = await this.refreshToken();
+                    if (refreshed) {
+                        // Retry the original request
+                        response = await originalFetch(url, { ...defaultOptions, ...options });
+                    }
+                }
+                
+                return response;
+            }
+        }
+        
+        // Override fetch to use secure token management
+        const originalFetch = window.fetch;
+        window.fetch = function(url, options = {}) {
+            // For API calls, use secure token management
+            if (url.includes('/api/')) {
+                return TokenManager.makeAuthenticatedRequest(url, options);
+            }
+            // For other requests, use original fetch
+            return originalFetch.call(this, url, options);
+        };
     </script>
 </body>
 </html>

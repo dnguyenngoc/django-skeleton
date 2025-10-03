@@ -17,10 +17,18 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.http import HttpRequest, HttpResponse
+from django.shortcuts import redirect
 from django.urls import include, path
+
+
+def redirect_to_login(request: HttpRequest) -> HttpResponse:
+    """Redirect root URL to login page."""
+    return redirect('/login/')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', redirect_to_login, name='home'),
     path('', include('accounts.urls')),
     path('api/', include('rest_framework.urls')),
 ]
