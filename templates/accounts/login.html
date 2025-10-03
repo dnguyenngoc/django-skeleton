@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Django Skeleton</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header h1 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-header p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .register-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 0.75rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            border: 1px solid #fcc;
+        }
+
+        .success-message {
+            background: #efe;
+            color: #3c3;
+            padding: 0.75rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            border: 1px solid #cfc;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .register-form {
+            display: none;
+        }
+
+        .register-form.active {
+            display: block;
+        }
+
+        .login-form.active {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1>Welcome Back</h1>
+            <p>Sign in to your account</p>
+        </div>
+
+        <div id="message"></div>
+
+        <!-- Login Form -->
+        <form id="loginForm" class="login-form active">
+            <div class="form-group">
+                <label for="loginEmail">Email</label>
+                <input type="email" id="loginEmail" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" name="password" required>
+            </div>
+            <button type="submit" class="login-btn" id="loginBtn">Sign In</button>
+        </form>
+
+        <!-- Register Form -->
+        <form id="registerForm" class="register-form">
+            <div class="form-group">
+                <label for="registerEmail">Email</label>
+                <input type="email" id="registerEmail" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="registerFirstName">First Name</label>
+                <input type="text" id="registerFirstName" name="first_name" required>
+            </div>
+            <div class="form-group">
+                <label for="registerLastName">Last Name</label>
+                <input type="text" id="registerLastName" name="last_name" required>
+            </div>
+            <div class="form-group">
+                <label for="registerPhone">Phone (Optional)</label>
+                <input type="tel" id="registerPhone" name="phone">
+            </div>
+            <div class="form-group">
+                <label for="registerPassword">Password</label>
+                <input type="password" id="registerPassword" name="password" required>
+            </div>
+            <div class="form-group">
+                <label for="registerPasswordConfirm">Confirm Password</label>
+                <input type="password" id="registerPasswordConfirm" name="password_confirm" required>
+            </div>
+            <button type="submit" class="login-btn" id="registerBtn">Sign Up</button>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+        </div>
+
+        <div class="register-link">
+            <a href="#" id="toggleForm">Don't have an account? Sign up</a>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api/auth';
+        let isLoginForm = true;
+
+        // DOM elements
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const toggleForm = document.getElementById('toggleForm');
+        const messageDiv = document.getElementById('message');
+        const loadingDiv = document.getElementById('loading');
+
+        // Toggle between login and register forms
+        toggleForm.addEventListener('click', (e) => {
+            e.preventDefault();
+            isLoginForm = !isLoginForm;
+            
+            if (isLoginForm) {
+                loginForm.classList.add('active');
+                registerForm.classList.remove('active');
+                toggleForm.textContent = "Don't have an account? Sign up";
+                document.querySelector('.login-header h1').textContent = 'Welcome Back';
+                document.querySelector('.login-header p').textContent = 'Sign in to your account';
+            } else {
+                loginForm.classList.remove('active');
+                registerForm.classList.add('active');
+                toggleForm.textContent = "Already have an account? Sign in";
+                document.querySelector('.login-header h1').textContent = 'Create Account';
+                document.querySelector('.login-header p').textContent = 'Sign up for a new account';
+            }
+            
+            clearMessage();
+        });
+
+        // Show message
+        function showMessage(message, type = 'error') {
+            messageDiv.innerHTML = `<div class="${type}-message">${message}</div>`;
+        }
+
+        // Clear message
+        function clearMessage() {
+            messageDiv.innerHTML = '';
+        }
+
+        // Show loading
+        function showLoading() {
+            loadingDiv.style.display = 'block';
+            document.getElementById('loginBtn').disabled = true;
+            document.getElementById('registerBtn').disabled = true;
+        }
+
+        // Hide loading
+        function hideLoading() {
+            loadingDiv.style.display = 'none';
+            document.getElementById('loginBtn').disabled = false;
+            document.getElementById('registerBtn').disabled = false;
+        }
+
+        // Store tokens in localStorage
+        function storeTokens(tokens) {
+            localStorage.setItem('access_token', tokens.access);
+            localStorage.setItem('refresh_token', tokens.refresh);
+        }
+
+        // Login form submission
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearMessage();
+            showLoading();
+
+            const formData = new FormData(loginForm);
+            const data = {
+                email: formData.get('email'),
+                password: formData.get('password')
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/login/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    storeTokens(result.tokens);
+                    showMessage('Login successful! Redirecting...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/dashboard/';
+                    }, 1500);
+                } else {
+                    showMessage(result.detail || 'Login failed. Please check your credentials.');
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.');
+            } finally {
+                hideLoading();
+            }
+        });
+
+        // Register form submission
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearMessage();
+            showLoading();
+
+            const formData = new FormData(registerForm);
+            const data = {
+                email: formData.get('email'),
+                first_name: formData.get('first_name'),
+                last_name: formData.get('last_name'),
+                phone: formData.get('phone'),
+                password: formData.get('password'),
+                password_confirm: formData.get('password_confirm')
+            };
+
+            // Validate password confirmation
+            if (data.password !== data.password_confirm) {
+                showMessage('Passwords do not match.');
+                hideLoading();
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/register/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    storeTokens(result.tokens);
+                    showMessage('Registration successful! Redirecting...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/dashboard/';
+                    }, 1500);
+                } else {
+                    if (result.email) {
+                        showMessage(`Email: ${result.email[0]}`);
+                    } else if (result.password) {
+                        showMessage(`Password: ${result.password[0]}`);
+                    } else if (result.password_confirm) {
+                        showMessage(`Password confirmation: ${result.password_confirm[0]}`);
+                    } else {
+                        showMessage('Registration failed. Please check your information.');
+                    }
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.');
+            } finally {
+                hideLoading();
+            }
+        });
+
+        // Check if user is already logged in
+        if (localStorage.getItem('access_token')) {
+            window.location.href = '/dashboard/';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+default_install_hook_types:
+  - pre-commit
+  - post-checkout
+  - post-merge
+  - post-rewrite
+repos:
+- repo: https://github.com/astral-sh/uv-pre-commit
+  # uv version.
+  rev: 0.6.3
+  hooks:
+    - id: uv-sync
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.13
+    hooks:
+      - id: ruff-check
+        args: ["--config", "pyproject.toml", "--fix"]
+      - id: ruff-format
+        args: ["--config", "pyproject.toml"]
