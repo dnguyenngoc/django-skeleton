@@ -14,6 +14,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -24,13 +25,14 @@ from django.urls import include, path
 
 def redirect_to_login(request: HttpRequest) -> HttpResponse:
     """Redirect root URL to login page."""
-    return redirect('/login/')
+    return redirect("/login/")
+
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', redirect_to_login, name='home'),
-    path('', include('accounts.urls')),
-    path('api/', include('rest_framework.urls')),
+    path("admin/", admin.site.urls),
+    path("", redirect_to_login, name="home"),
+    path("", include("accounts.urls")),
+    path("api/", include("rest_framework.urls")),
 ]
 
 # Serve static and media files in development
