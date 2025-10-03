@@ -197,14 +197,28 @@
     </div>
 
     <script>
+        // Get CSRF token from Django
+        const csrfToken = '{{ csrf_token }}';
+        
         function logout() {
             fetch('/api/auth/logout/', {
                 method: 'POST',
                 credentials: 'include', // Include cookies
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken')
+                    'X-CSRFToken': csrfToken || getCookie('csrftoken') || ''
                 }
+            })
+            .then(response => {
+                console.log('Logout response:', response.status);
+                if (response.ok) {
+                    console.log('Logout successful');
+                } else {
+                    console.log('Logout failed:', response.status);
+                }
+            })
+            .catch(error => {
+                console.log('Logout error:', error);
             })
             .finally(() => {
                 // Redirect to login regardless of API response

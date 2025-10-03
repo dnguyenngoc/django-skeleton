@@ -157,6 +157,28 @@ uv run python manage.py test
 ```
 
 ### Code Quality
+
+#### Pre-commit Setup
+
+This project uses pre-commit hooks to ensure code quality. Setup pre-commit hooks:
+
+```bash
+# Install pre-commit (already included in dev dependencies)
+uv sync
+
+# Install git hooks
+uv run pre-commit install
+
+# Run pre-commit on all files (optional)
+uv run pre-commit run --all-files
+```
+
+Pre-commit hooks will automatically run on every commit and include:
+- **Ruff check**: Lint Python code and fix issues
+- **Ruff format**: Format Python code
+- **uv sync**: Ensure dependencies are up to date
+
+#### Manual Code Quality Commands
 ```bash
 # Format code
 uv run ruff format .
@@ -166,6 +188,9 @@ uv run ruff check .
 
 # Fix linting issues
 uv run ruff check --fix .
+
+# Run pre-commit manually
+uv run pre-commit run --all-files
 ```
 
 ### Docker
@@ -209,11 +234,13 @@ MEDIA_ROOT=/app/media/
 
 1. Fork the repository
 2. Create a feature branch
-3. Make your changes
-4. Run tests and linting: `uv run ruff check .`
-5. Commit your changes
-6. Push to the branch
-7. Create a Pull Request
+3. Setup pre-commit hooks: `uv run pre-commit install`
+4. Make your changes
+5. Pre-commit hooks will run automatically on commit
+6. If hooks fail, fix the issues and commit again
+7. Run tests: `uv run python manage.py test`
+8. Push to the branch
+9. Create a Pull Request
 
 ## License
 

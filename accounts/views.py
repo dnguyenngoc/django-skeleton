@@ -123,7 +123,7 @@ class ChangePasswordView(generics.UpdateAPIView):
 
 
 @api_view(["POST"])
-@permission_classes([permissions.IsAuthenticated])
+@permission_classes([permissions.AllowAny])
 def logout_view(request: HttpRequest) -> Response:
     """View for user logout."""
     try:
@@ -136,6 +136,11 @@ def logout_view(request: HttpRequest) -> Response:
             token = RefreshToken(refresh_token)
             token.blacklist()
 
+        # Logout Django session
+        from django.contrib.auth import logout
+
+        logout(request)
+
         # Clear tokens from cookies
         response = TokenManager.create_secure_response(
             {"message": "Logout successful."}
@@ -145,6 +150,10 @@ def logout_view(request: HttpRequest) -> Response:
         return response
     except Exception:
         # Even if token is invalid, clear cookies and logout
+        from django.contrib.auth import logout
+
+        logout(request)
+
         response = TokenManager.create_secure_response(
             {"message": "Logout successful."}
         )
@@ -222,7 +231,7 @@ def login_page_view(request: HttpRequest) -> HttpResponse:
 @auth_required
 def dashboard_view(request: HttpRequest) -> HttpResponse:
     """View for user dashboard."""
-    return render(request, "accounts/dashboard.html", {"user": request.user})
+    return render(request, "dashboard.html", {"user": request.user})
 
 
 @auth_required

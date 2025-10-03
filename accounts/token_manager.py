@@ -25,13 +25,15 @@ class TokenManager:
         response: HttpResponse, tokens: dict[str, str]
     ) -> HttpResponse:
         """Set JWT tokens in secure HTTP-only cookies."""
+        from django.conf import settings
+
         # Access token - short lived, httpOnly
         response.set_cookie(
             "access_token",
             tokens["access"],
             max_age=15 * 60,  # 15 minutes
             httponly=True,
-            secure=True,  # HTTPS only in production
+            secure=not settings.DEBUG,  # Only secure in production
             samesite="Strict",
             path="/",
         )
@@ -42,7 +44,7 @@ class TokenManager:
             tokens["refresh"],
             max_age=7 * 24 * 60 * 60,  # 7 days
             httponly=True,
-            secure=True,  # HTTPS only in production
+            secure=not settings.DEBUG,  # Only secure in production
             samesite="Strict",
             path="/",
         )

@@ -502,8 +502,8 @@
         window.addEventListener('load', function() {
             console.log('Page loaded, checking if user is already logged in...');
             
-            // Check if user has session (cookies)
-            fetch('/api/auth/check/', {
+            // Check if user has session (cookies) - use original fetch to avoid loop
+            originalFetch('/api/auth/check/', {
                 credentials: 'include'
             })
             .then(response => {
